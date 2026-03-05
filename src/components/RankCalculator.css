@@ -1,0 +1,134 @@
+/* RankCalculator.css */
+
+.rank-calculator {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.rank-calculator h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.year-selector {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.year-selector label {
+  font-weight: 600;
+  color: #495057;
+  margin-right: 10px;
+}
+
+.year-selector select {
+  padding: 8px 15px;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  background: white;
+  color: #2c3e50;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.stream-selector {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #e3f2fd;
+  border-radius: 10px;
+}
+
+.stream-selector label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #1565c0;
+  cursor: pointer;
+}
+
+.stream-selector input {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.marks-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.input-group input {
+  padding: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.predict-btn, .reset-btn {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.predict-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.predict-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+}
+
+.reset-btn {
+  background: #e9ecef;
+  color: #495057;
+  border: 2px solid #dee2e6;
+}
+
+.reset-btn:hover {
+  background: #dee2e6;
+  transform: translateY(-2px);
+}
