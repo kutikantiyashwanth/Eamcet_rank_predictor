@@ -6,10 +6,15 @@ import Instructions from './components/Instructions';
 
 function App() {
   const [predictedRank, setPredictedRank] = useState(null);
-  const [yearData] = useState(2024);
+  const [yearData, setYearData] = useState(2024);
 
   const handleRankPrediction = (rank) => {
     setPredictedRank(rank);
+  };
+
+  const handleYearChange = (e) => {
+    setYearData(Number(e.target.value));
+    setPredictedRank(null); // Reset prediction on year change
   };
 
   return (
@@ -24,8 +29,8 @@ function App() {
           <RankCalculator 
             onPredict={handleRankPrediction} 
             year={yearData}
+            onYearChange={handleYearChange}
           />
-          
           {predictedRank && (
             <div className="prediction-result">
               <h3>Predicted Rank: <span className="rank-value">{predictedRank.toLocaleString()}</span></h3>
@@ -35,16 +40,14 @@ function App() {
               </p>
             </div>
           )}
-
           <RankTrends year={yearData} />
         </div>
-
         <div className="sidebar">
           <Instructions />
           <div className="additional-info">
             <h3>Important Notes</h3>
             <ul>
-              <li>Based on 2023-2024 EAMCET patterns</li>
+              <li>Based on 2023-2025 EAMCET patterns</li>
               <li>Includes normalization process</li>
               <li>Considers subject weightage</li>
               <li>Updated with latest trends</li>
@@ -52,7 +55,6 @@ function App() {
           </div>
         </div>
       </div>
-
       <footer className="app-footer">
         <p>© 2024 EAMCET Rank Predictor. For educational purposes only.</p>
         <p>This tool provides approximate predictions and should not be considered as final.</p>

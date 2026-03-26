@@ -4,6 +4,18 @@ import './RankTrends.css';
 const RankTrends = ({ year }) => {
   // Sample historical data
   const trendsData = {
+    2025: [
+      { marks: 300, rank: 1 },
+      { marks: 290, rank: 400 },
+      { marks: 280, rank: 1300 },
+      { marks: 270, rank: 3000 },
+      { marks: 260, rank: 6500 },
+      { marks: 250, rank: 13000 },
+      { marks: 240, rank: 21000 },
+      { marks: 230, rank: 35000 },
+      { marks: 220, rank: 52000 },
+      { marks: 210, rank: 75000 },
+    ],
     2024: [
       { marks: 300, rank: 1 },
       { marks: 290, rank: 500 },

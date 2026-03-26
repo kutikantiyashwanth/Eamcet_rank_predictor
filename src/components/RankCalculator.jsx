@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RankCalculator.css';
 
-const RankCalculator = ({ onPredict, year }) => {
+const RankCalculator = ({ onPredict, year, onYearChange }) => {
   const [marks, setMarks] = useState({
     physics: '',
     chemistry: '',
@@ -27,11 +27,9 @@ const RankCalculator = ({ onPredict, year }) => {
 
     // Calculate total marks
     const totalMarks = physics + chemistry + mathematics;
-    
     // Base prediction algorithm (simplified version)
     // In reality, this would be more complex based on historical data
     let predictedRank;
-    
     if (totalMarks >= 280) {
       predictedRank = Math.floor((301 - totalMarks) * 150); // Top ranks
     } else if (totalMarks >= 240) {
@@ -43,14 +41,14 @@ const RankCalculator = ({ onPredict, year }) => {
     } else {
       predictedRank = Math.floor((301 - totalMarks) * 1200);
     }
-
     // Add some randomization based on year trends
-    const yearFactor = year === 2024 ? 0.95 : year === 2023 ? 1.0 : 1.05;
+    let yearFactor = 1.05;
+    if (year === 2025) yearFactor = 0.92;
+    else if (year === 2024) yearFactor = 0.95;
+    else if (year === 2023) yearFactor = 1.0;
     predictedRank = Math.floor(predictedRank * yearFactor);
-
     // Ensure rank is positive
     predictedRank = Math.max(1, predictedRank);
-
     onPredict(predictedRank);
   };
 
@@ -73,13 +71,13 @@ const RankCalculator = ({ onPredict, year }) => {
       <h2>Rank Predictor</h2>
       <div className="year-selector">
         <label>Select Year for Comparison: </label>
-        <select value={year} onChange={() => {}} disabled>
+        <select value={year} onChange={onYearChange}>
+          <option value="2025">2025</option>
           <option value="2024">2024</option>
           <option value="2023">2023</option>
           <option value="2022">2022</option>
         </select>
       </div>
-
       <form onSubmit={handleSubmit} className="marks-form">
         <div className="stream-selector">
           <label>
@@ -92,7 +90,6 @@ const RankCalculator = ({ onPredict, year }) => {
             MPC (Mathematics, Physics, Chemistry)
           </label>
         </div>
-
         <div className="input-group">
           <label htmlFor="physics">Physics Marks (0-100)</label>
           <input
@@ -107,7 +104,6 @@ const RankCalculator = ({ onPredict, year }) => {
             required
           />
         </div>
-
         <div className="input-group">
           <label htmlFor="chemistry">Chemistry Marks (0-100)</label>
           <input
@@ -122,7 +118,6 @@ const RankCalculator = ({ onPredict, year }) => {
             required
           />
         </div>
-
         <div className="input-group">
           <label htmlFor="mathematics">Mathematics Marks (0-100)</label>
           <input
@@ -137,7 +132,6 @@ const RankCalculator = ({ onPredict, year }) => {
             required
           />
         </div>
-
         <div className="form-actions">
           <button type="submit" className="predict-btn">
             Predict Rank
