@@ -1,72 +1,150 @@
-/* Instructions.css */
+/* ==============================
+   Instructions Card
+   ============================== */
 
 .instructions {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  backdrop-filter: blur(20px);
+  transition: var(--transition-base);
+  animation: slideInRight 0.5s ease 0.2s both;
+}
+
+.instructions:hover {
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: var(--shadow-glow);
 }
 
 .instructions h3 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-.instructions ol {
-  padding-left: 20px;
-  margin-bottom: 30px;
-}
-
-.instructions li {
-  padding: 10px 0;
-  color: #495057;
-  line-height: 1.6;
-}
-
-.instructions li::marker {
-  font-weight: bold;
-  color: #667eea;
-}
-
-.calculation-method {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  border-left: 5px solid #28a745;
-}
-
-.calculation-method h4 {
-  color: #2c3e50;
-  margin-bottom: 15px;
+.instructions h3::before {
+  content: '📋';
   font-size: 1.2rem;
 }
 
-.calculation-method p {
-  color: #495057;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.calculation-method ul {
+/* Steps */
+.steps-list {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  counter-reset: steps;
 }
 
-.calculation-method li {
-  padding: 8px 0;
-  color: #6c757d;
+.step-item {
+  counter-increment: steps;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.step-item:hover {
+  border-color: rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.05);
+  transform: translateX(4px);
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+.step-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-top: 3px;
+}
+
+/* Calculation method */
+.calculation-method {
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
   position: relative;
-  padding-left: 25px;
+  overflow: hidden;
 }
 
-.calculation-method li:before {
-  content: "•";
+.calculation-method::before {
+  content: '';
   position: absolute;
   left: 0;
-  color: #28a745;
-  font-size: 1.5rem;
-  line-height: 1;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--gradient-success);
+  border-radius: var(--radius-full);
+}
+
+.calculation-method h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.calculation-method h4::before {
+  content: '⚙️';
+}
+
+.calculation-method p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+}
+
+.method-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.method-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.method-list li::before {
+  content: '→';
+  color: var(--accent-emerald);
+  font-weight: 700;
+  flex-shrink: 0;
 }

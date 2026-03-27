@@ -1,55 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import './RankCalculator.css';
 
+const years = [2025, 2024, 2023, 2022];
+
 const RankCalculator = ({ onPredict, year, onYearChange }) => {
+  const { user } = useAuth();
   const [marks, setMarks] = useState({
     physics: '',
     chemistry: '',
     mathematics: '',
-    // For MPC stream
   });
 
-  const [stream, setStream] = useState('MPC');
+  const [stream] = useState('MPC');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setMarks({
-      ...marks,
-      [name]: Math.min(100, Math.max(0, value)) // Limit between 0-100
-    });
+    if (value === '') {
+      setMarks({ ...marks, [name]: '' });
+      return;
+    }
+    const num = Math.min(100, Math.max(0, parseFloat(value)));
+    setMarks({ ...marks, [name]: isNaN(num) ? '' : num });
+  };
+
+  const totalMarks = useMemo(() => {
+    const p = parseFloat(marks.physics) || 0;
+    const c = parseFloat(marks.chemistry) || 0;
+    const m = parseFloat(marks.mathematics) || 0;
+    return p + c + m;
+  }, [marks]);
+
+  const getProgressColor = (value) => {
+    const v = parseFloat(value) || 0;
+    if (v >= 80) return 'var(--accent-emerald)';
+    if (v >= 50) return 'var(--accent-amber)';
+    if (v > 0) return 'var(--accent-rose)';
+    return 'transparent';
   };
 
   const calculateRank = () => {
-    // Convert string values to numbers
     const physics = parseFloat(marks.physics) || 0;
     const chemistry = parseFloat(marks.chemistry) || 0;
     const mathematics = parseFloat(marks.mathematics) || 0;
+    const total = physics + chemistry + mathematics;
 
-    // Calculate total marks
-    const totalMarks = physics + chemistry + mathematics;
-    // Base prediction algorithm (simplified version)
-    // In reality, this would be more complex based on historical data
     let predictedRank;
-    if (totalMarks >= 280) {
-      predictedRank = Math.floor((301 - totalMarks) * 150); // Top ranks
-    } else if (totalMarks >= 240) {
-      predictedRank = Math.floor((301 - totalMarks) * 300);
-    } else if (totalMarks >= 200) {
-      predictedRank = Math.floor((301 - totalMarks) * 500);
-    } else if (totalMarks >= 150) {
-      predictedRank = Math.floor((301 - totalMarks) * 800);
+    if (total >= 280) {
+      predictedRank = Math.floor((301 - total) * 150);
+    } else if (total >= 240) {
+      predictedRank = Math.floor((301 - total) * 300);
+    } else if (total >= 200) {
+      predictedRank = Math.floor((301 - total) * 500);
+    } else if (total >= 150) {
+      predictedRank = Math.floor((301 - total) * 800);
     } else {
-      predictedRank = Math.floor((301 - totalMarks) * 1200);
+      predictedRank = Math.floor((301 - total) * 1200);
     }
-    // Add some randomization based on year trends
-    let yearFactor = 1.05;
-    if (year === 2025) yearFactor = 0.92;
-    else if (year === 2024) yearFactor = 0.95;
-    else if (year === 2023) yearFactor = 1.0;
-    predictedRank = Math.floor(predictedRank * yearFactor);
-    // Ensure rank is positive
+
+    // Year-specific factors based on competition intensity
+    const yearFactors = {
+      2025: 0.90,
+      2024: 0.95,
+      2023: 1.0,
+      2022: 1.05,
+    };
+    predictedRank = Math.floor(predictedRank * (yearFactors[year] || 1.0));
     predictedRank = Math.max(1, predictedRank);
-    onPredict(predictedRank);
+
+    onPredict(predictedRank, total);
+
+    // Save prediction to database
+    if (user && supabase) {
+      supabase.from('predictions').insert([
+        {
+          user_id: user.id,
+          marks: total,
+          predicted_rank: predictedRank,
+          year: year
+        }
+      ]).then(({ error }) => {
+        if (error) console.error("Error saving prediction:", error.message);
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -58,86 +92,89 @@ const RankCalculator = ({ onPredict, year, onYearChange }) => {
   };
 
   const resetForm = () => {
-    setMarks({
-      physics: '',
-      chemistry: '',
-      mathematics: '',
-    });
-    onPredict(null);
+    setMarks({ physics: '', chemistry: '', mathematics: '' });
+    onPredict(null, null);
   };
+
+  const subjects = [
+    { key: 'physics', label: 'Physics', icon: '⚛️' },
+    { key: 'chemistry', label: 'Chemistry', icon: '🧪' },
+    { key: 'mathematics', label: 'Mathematics', icon: '📐' },
+  ];
 
   return (
     <div className="rank-calculator">
-      <h2>Rank Predictor</h2>
-      <div className="year-selector">
-        <label>Select Year for Comparison: </label>
-        <select value={year} onChange={onYearChange}>
-          <option value="2025">2025</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-        </select>
+      <div className="calculator-header">
+        <div className="calculator-title">
+          <span className="icon">🎯</span>
+          <h2>Rank Predictor</h2>
+        </div>
+        <div className="year-selector">
+          {years.map((y) => (
+            <button
+              key={y}
+              type="button"
+              className={`year-btn ${year === y ? 'active' : ''}`}
+              onClick={() => onYearChange({ target: { value: y } })}
+            >
+              {y}
+            </button>
+          ))}
+        </div>
       </div>
+
+      <div className="stream-selector">
+        <label className={`stream-chip ${stream === 'MPC' ? 'active' : ''}`}>
+          <input type="radio" value="MPC" checked={stream === 'MPC'} readOnly />
+          📘 MPC (Maths, Physics, Chemistry)
+        </label>
+      </div>
+
       <form onSubmit={handleSubmit} className="marks-form">
-        <div className="stream-selector">
-          <label>
+        {subjects.map((subject) => (
+          <div className="input-group" key={subject.key}>
+            <div className="input-label">
+              <label htmlFor={subject.key}>
+                <span className="subject-icon">{subject.icon}</span>
+                {subject.label}
+              </label>
+              <span className="max-marks">/ 100</span>
+            </div>
             <input
-              type="radio"
-              value="MPC"
-              checked={stream === 'MPC'}
-              onChange={(e) => setStream(e.target.value)}
+              type="number"
+              id={subject.key}
+              name={subject.key}
+              value={marks[subject.key]}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              step="0.1"
+              placeholder={`Enter ${subject.label} marks`}
+              required
             />
-            MPC (Mathematics, Physics, Chemistry)
-          </label>
+            <div className="marks-progress">
+              <div
+                className="marks-progress-bar"
+                style={{
+                  width: `${parseFloat(marks[subject.key]) || 0}%`,
+                  background: getProgressColor(marks[subject.key]),
+                }}
+              />
+            </div>
+          </div>
+        ))}
+
+        <div className="total-display">
+          <span className="total-label">Total Marks</span>
+          <span className="total-value">{totalMarks} / 300</span>
         </div>
-        <div className="input-group">
-          <label htmlFor="physics">Physics Marks (0-100)</label>
-          <input
-            type="number"
-            id="physics"
-            name="physics"
-            value={marks.physics}
-            onChange={handleInputChange}
-            min="0"
-            max="100"
-            step="0.1"
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="chemistry">Chemistry Marks (0-100)</label>
-          <input
-            type="number"
-            id="chemistry"
-            name="chemistry"
-            value={marks.chemistry}
-            onChange={handleInputChange}
-            min="0"
-            max="100"
-            step="0.1"
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="mathematics">Mathematics Marks (0-100)</label>
-          <input
-            type="number"
-            id="mathematics"
-            name="mathematics"
-            value={marks.mathematics}
-            onChange={handleInputChange}
-            min="0"
-            max="100"
-            step="0.1"
-            required
-          />
-        </div>
+
         <div className="form-actions">
-          <button type="submit" className="predict-btn">
-            Predict Rank
+          <button type="submit" className="predict-btn" id="predict-rank-btn">
+            🚀 Predict Rank
           </button>
-          <button type="button" onClick={resetForm} className="reset-btn">
-            Reset
+          <button type="button" onClick={resetForm} className="reset-btn" id="reset-btn">
+            ↺ Reset
           </button>
         </div>
       </form>
