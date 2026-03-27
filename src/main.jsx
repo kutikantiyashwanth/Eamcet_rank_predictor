@@ -70,7 +70,7 @@ function AuthRoute({ children }) {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/Eamcet_rank_predictor">
+    <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route
